@@ -19,9 +19,6 @@ export const App = () => {
   }, [contacts]);
 
   const visibleContacts = useMemo(() => {
-    if (contacts === []) {
-      return;
-    }
     const normalizedFilter = filter.toLowerCase();
     return contacts.filter(contact => {
       return contact.name.toLowerCase().includes(normalizedFilter, 0);
@@ -29,20 +26,18 @@ export const App = () => {
   }, [filter, contacts]);
 
   const formSubmitSearchHandler = data => {
-    if (contacts) {
-      const searchResult = contacts.find(contact => contact.name === data.name);
-      if (!searchResult) {
-        setContacts([{ id: nanoid(), ...data }, ...contacts]);
-        return true;
-      } else {
-        alert(`${data.name} is already in contacts`);
-        return false;
-      }
+    const searchResult = contacts.find(contact => contact.name === data.name);
+    if (searchResult) {
+      alert(`${data.name} is already in contacts`);
+      return false;
     }
+    setContacts(prevContacts => [{ id: nanoid(), ...data }, ...prevContacts]);
   };
 
   const deleteItem = contactId => {
-    setContacts(contacts.filter(item => item.id !== contactId));
+    setContacts(prevContacts =>
+      prevContacts.filter(item => item.id !== contactId)
+    );
   };
 
   return (
